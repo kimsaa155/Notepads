@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>កត់ត្រា PRO - Ultimate V7</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap');
+        
+        body {
+            font-family: 'Kantumruy Pro', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .note-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .note-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        /* Hide Scrollbar */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="selection:bg-indigo-100 selection:text-indigo-900">
+
+    <!-- Status Toaster -->
+    <div id="toaster" class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] hidden">
+        <div id="toaster-content" class="px-6 py-2.5 rounded-full shadow-2xl border flex items-center gap-2 font-bold text-xs text-white bg-slate-800/90 border-slate-700">
+            <span id="toaster-icon"></span>
+            <span id="toaster-text"></span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-xl border-b sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2.5 rounded-2xl text-white shadow-lg shadow-indigo-100">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h1 class="font-black text-sm md:text-lg tracking-tight">កត់ត្រា PRO</h1>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest hidden sm:block">HTML CLOUD SYNC</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5 md:gap-3">
+                <button onclick="toggleSettings()" class="p-2.5 rounded-xl text-slate-500 hover:bg-slate-100 transition-all">
+                    <i class="fas fa-cog text-xl"></i>
+                </button>
+                <button onclick="exportToTxt()" class="flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-slate-800 transition-all active:scale-95 shadow-lg shadow-slate-200">
+                    <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export TXT</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto p-4 md:p-8 flex-grow w-full">
+        
+        <!-- Settings View -->
+        <div id="settings-view" class="hidden bg-white rounded-[2.5rem] p-6 md:p-10 border border-slate-100 shadow-2xl animate-fade">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                <div class="flex items-center gap-4">
+                    <div class="bg-sky-500 p-3 rounded-2xl text-white shadow-lg shadow-sky-100"><i class="fas fa-bolt"></i></div>
+                    <div>
+                        <h2 class="text-xl font-black uppercase">Telegram Settings</h2>
+                        <p class="text-xs text-slate-400 font-medium">Sync កំណត់ត្រាទៅកាន់ Telegram</p>
+                    </div>
+                </div>
+                <button onclick="testTelegram()" class="flex items-center justify-center gap-2 px-6 py-3 bg-sky-50 text-sky-600 rounded-2xl font-bold text-xs hover:bg-sky-100 transition-all border border-sky-200">
+                    <i class="fas fa-sync-alt"></i> ធ្វើតេស្តការតភ្ជាប់
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase ml-1">Bot API Token</label>
+                    <input type="password" id="tg-token" placeholder="0000:ABC..." class="w-full px-5 py-4 rounded-2xl border-slate-100 bg-slate-50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all text-sm outline-none">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase ml-1">Your Chat ID</label>
+                    <input type="text" id="tg-chatid" placeholder="12345678" class="w-full px-5 py-4 rounded-2xl border-slate-100 bg-slate-50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all text-sm outline-none">
+                </div>
+            </div>
+
+            <div class="mt-8 p-6 bg-slate-50 rounded-3xl border border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div id="auto-sync-icon" class="p-3 rounded-2xl bg-white text-slate-400 border transition-all">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black">Sync ស្វ័យប្រវត្តិ</p>
+                        <p class="text-[11px] text-slate-400 font-medium">ផ្ញើភ្លាមៗបន្ទាប់ពីចុចរក្សាទុក</p>
+                    </div>
+                </div>
+                <button onclick="toggleAutoSend()" id="auto-send-toggle" class="w-14 h-8 bg-slate-200 rounded-full relative transition-all">
+                    <div id="toggle-circle" class="absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all shadow-md"></div>
+                </button>
+            </div>
+
+            <button onclick="toggleSettings()" class="w-full py-5 bg-slate-900 text-white rounded-[1.5rem] font-black text-sm mt-10 shadow-2xl hover:bg-slate-800 active:scale-95 transition-all uppercase tracking-widest">
+                រក្សាទុកការកំណត់
+            </button>
+        </div>
+
+        <!-- List View -->
+        <div id="list-view" class="space-y-8 animate-fade">
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <div class="relative flex-grow w-full">
+                    <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                    <input type="text" id="search-input" oninput="renderNotes()" placeholder="ស្វែងរកកំណត់ត្រារបស់អ្នក..." class="w-full pl-14 pr-6 py-4 rounded-2xl border-none shadow-sm focus:ring-4 focus:ring-indigo-500/10 bg-white transition-all text-sm outline-none">
+                </div>
+                <div id="note-count" class="bg-white px-6 py-4 rounded-2xl shadow-sm border border-slate-50 text-[11px] font-black text-slate-400 uppercase tracking-tighter">
+                    0 កំណត់ត្រា
+                </div>
+            </div>
+
+            <div id="notes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Notes will be injected here -->
+            </div>
+        </div>
+
+        <!-- Editor View -->
+        <div id="editor-view" class="hidden min-h-[80vh] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col border-8 border-white transition-all duration-500 animate-fade">
+            <div class="px-6 py-5 border-b flex items-center justify-between glass">
+                <button onclick="closeEditor()" class="p-3 hover:bg-white/60 rounded-full transition-all active:scale-90">
+                    <i class="fas fa-chevron-left text-xl"></i>
+                </button>
+                
+                <div class="flex items-center gap-2">
+                    <div id="save-indicator" class="hidden text-[10px] font-black text-indigo-600 bg-white/80 px-3 py-1 rounded-full shadow-sm animate-pulse">រក្សាទុក...</div>
+                    
+                    <div class="relative group">
+                        <button class="p-3 hover:bg-white/60 rounded-full active:scale-90">
+                            <i class="fas fa-palette text-xl"></i>
+                        </button>
+                        <div class="absolute top-14 right-0 bg-white p-3 rounded-2xl shadow-2xl border hidden group-hover:flex gap-3 z-50 animate-fade">
+                            <div onclick="setNoteColor('bg-white text-slate-900 border-slate-200')" class="w-8 h-8 rounded-full border bg-white cursor-pointer"></div>
+                            <div onclick="setNoteColor('bg-amber-50 text-amber-900 border-amber-200')" class="w-8 h-8 rounded-full border bg-amber-200 cursor-pointer"></div>
+                            <div onclick="setNoteColor('bg-sky-50 text-sky-900 border-sky-200')" class="w-8 h-8 rounded-full border bg-sky-200 cursor-pointer"></div>
+                            <div onclick="setNoteColor('bg-emerald-50 text-emerald-900 border-emerald-200')" class="w-8 h-8 rounded-full border bg-emerald-200 cursor-pointer"></div>
+                            <div onclick="setNoteColor('bg-rose-50 text-rose-900 border-rose-200')" class="w-8 h-8 rounded-full border bg-rose-200 cursor-pointer"></div>
+                            <div onclick="setNoteColor('bg-indigo-50 text-indigo-900 border-indigo-200')" class="w-8 h-8 rounded-full border bg-indigo-200 cursor-pointer"></div>
+                        </div>
+                    </div>
+
+                    <button id="lock-toggle" onclick="toggleNoteLock()" class="p-3 rounded-2xl hover:bg-white/60 text-slate-600 transition-all active:scale-90">
+                        <i class="fas fa-unlock text-xl"></i>
+                    </button>
+
+                    <button onclick="saveNote(true)" class="bg-slate-900 text-white px-8 py-3 rounded-2xl font-black text-xs shadow-xl hover:bg-indigo-600 transition-all active:scale-95 flex items-center gap-2 uppercase tracking-widest">
+                        <i class="fas fa-paper-plane"></i> រក្សាទុក
+                    </button>
+                </div>
+            </div>
+
+            <div id="editor-content" class="p-8 md:p-12 flex-1 flex flex-col gap-6">
+                <div id="passcode-input-area" class="hidden bg-white/80 backdrop-blur-md p-5 rounded-3xl flex items-center gap-4 border border-indigo-100 shadow-sm">
+                    <div class="bg-indigo-600 p-2.5 rounded-xl text-white shadow-lg"><i class="fas fa-lock text-sm"></i></div>
+                    <input type="password" id="note-password" placeholder="កំណត់លេខសម្ងាត់..." class="bg-transparent border-none outline-none flex-1 text-sm font-bold placeholder:text-slate-400">
+                </div>
+                <input type="text" id="note-title" placeholder="ចំណងជើង..." class="bg-transparent text-4xl md:text-5xl font-black border-none outline-none focus:ring-0 placeholder:text-black/5 p-0 tracking-tighter">
+                <textarea id="note-text" placeholder="ចាប់ផ្តើមសរសេរអ្វីដែលអស្ចារ្យ..." class="bg-transparent flex-1 text-lg md:text-xl border-none outline-none focus:ring-0 resize-none placeholder:text-black/5 p-0 leading-relaxed font-medium"></textarea>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full bg-white border-t mt-auto py-10">
+        <div class="max-w-5xl mx-auto flex flex-col items-center gap-8">
+            <div class="flex items-center gap-8 text-slate-300">
+                <a href="#" class="hover:text-blue-600 transition-all hover:-translate-y-1"><i class="fab fa-facebook-f text-xl"></i></a>
+                <a href="#" class="hover:text-sky-500 transition-all hover:-translate-y-1"><i class="fab fa-telegram-plane text-xl"></i></a>
+                <a href="#" class="hover:text-pink-600 transition-all hover:-translate-y-1"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="#" class="hover:text-red-600 transition-all hover:-translate-y-1"><i class="fab fa-youtube text-xl"></i></a>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">©️ Copyright 2026 - All Rights Reserved.</p>
+                <div class="w-8 h-1 bg-indigo-600 rounded-full"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Passcode Modal -->
+    <div id="passcode-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-[3rem] p-12 w-full max-w-sm shadow-2xl flex flex-col items-center animate-fade">
+            <div class="w-24 h-24 bg-indigo-50 text-indigo-600 rounded-[2rem] flex items-center justify-center mb-8 shadow-inner ring-8 ring-indigo-50/50">
+                <i class="fas fa-lock text-4xl"></i>
+            </div>
+            <h2 class="text-2xl font-black mb-1 uppercase text-slate-900">បញ្ជាក់សិទ្ធិ</h2>
+            <p class="text-slate-400 text-[10px] mb-8 font-black uppercase tracking-widest">PRIVATE NOTE</p>
+            
+            <input type="password" id="modal-passcode-input" class="w-full text-center text-5xl tracking-[0.4em] py-5 bg-slate-50 rounded-3xl border-none outline-none mb-8 font-black text-indigo-900">
+            
+            <div id="modal-error" class="hidden text-rose-500 text-[10px] font-black mb-8 uppercase animate-bounce">លេខសម្ងាត់មិនត្រឹមត្រូវ!</div>
+            
+            <div class="flex w-full gap-4">
+                <button onclick="closePasscodeModal()" class="flex-1 py-5 text-[10px] font-black uppercase text-slate-400 hover:bg-slate-50 rounded-2xl tracking-widest">បោះបង់</button>
+                <button onclick="verifyNotePasscode()" class="flex-1 py-5 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase shadow-2xl shadow-indigo-200 tracking-widest">យល់ព្រម</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- App State ---
+        let notes = JSON.parse(localStorage.getItem('pro_notes_v7_html')) || [];
+        let tgConfig = JSON.parse(localStorage.getItem('pro_tg_v7_html')) || { token: '', chatId: '', autoSend: false };
+        let currentNoteId = null;
+        let autoSaveInterval = null;
+
+        // --- Core Functions ---
+        function init() {
+            renderNotes();
+            updateTgUI();
+        }
+
+        function renderNotes() {
+            const grid = document.getElementById('notes-grid');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const filtered = notes.filter(n => n.title.toLowerCase().includes(search) || n.content.toLowerCase().includes(search));
+            
+            document.getElementById('note-count').innerText = `${notes.length} កំណត់ត្រា`;
+            grid.innerHTML = `
+                <button onclick="createNewNote()" class="h-52 border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center gap-4 text-slate-300 hover:border-indigo-400 hover:text-indigo-500 hover:bg-indigo-50/20 transition-all group">
+                    <div class="p-4 bg-slate-50 rounded-full group-hover:bg-indigo-50"><i class="fas fa-plus text-3xl"></i></div>
+                    <span class="font-black text-[10px] uppercase tracking-[0.2em]">បន្ថែមថ្មី</span>
+                </button>
+            `;
+
+            filtered.forEach(note => {
+                const date = new Date(note.updatedAt).toLocaleDateString('km-KH');
+                const card = document.createElement('div');
+                card.className = `${note.color} h-52 p-6 rounded-[2rem] shadow-sm border flex flex-col cursor-pointer note-card group relative overflow-hidden`;
+                card.onclick = () => openNote(note.id);
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex gap-2">
+                            ${note.isLocked ? '<div class="bg-white/50 p-1.5 rounded-lg"><i class="fas fa-lock text-[10px] text-indigo-600"></i></div>' : ''}
+                            <span class="text-[9px] font-black text-black/30 uppercase bg-black/5 px-2 py-1 rounded-md">${date}</span>
+                        </div>
+                        <button onclick="event.stopPropagation(); deleteNote('${note.id}')" class="opacity-0 group-hover:opacity-100 p-2 hover:bg-rose-500 hover:text-white rounded-xl text-slate-400 transition-all">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-black text-base mb-2 truncate">${note.isLocked ? 'កំណត់ត្រាជាប់សោ' : (note.title || 'គ្មានចំណងជើង')}</h3>
+                    <p class="text-[11px] opacity-60 line-clamp-3 leading-relaxed font-medium">${note.isLocked ? '••••••••••••••••••••' : (note.content || '...')}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function createNewNote() {
+            const id = Date.now().toString();
+            const newNote = {
+                id,
+                title: '',
+                content: '',
+                color: 'bg-white text-slate-900 border-slate-200',
+                isLocked: false,
+                password: '',
+                updatedAt: Date.now()
+            };
+            notes.unshift(newNote);
+            currentNoteId = id;
+            openEditor(newNote);
+        }
+
+        function openNote(id) {
+            const note = notes.find(n => n.id === id);
+            if (note.isLocked) {
+                currentNoteId = id;
+                document.getElementById('passcode-modal').classList.replace('hidden', 'flex');
+                document.getElementById('modal-passcode-input').value = '';
+                document.getElementById('modal-passcode-input').focus();
+            } else {
+                currentNoteId = id;
+                openEditor(note);
+            }
+        }
+
+        function openEditor(note) {
+            document.getElementById('list-view').classList.add('hidden');
+            document.getElementById('editor-view').classList.remove('hidden');
+            
+            const editor = document.getElementById('editor-view');
+            editor.className = editor.className.replace(/bg-\w+-\d+/g, '').replace(/text-\w+-\d+/g, '').replace(/border-\w+-\d+/g, '');
+            editor.classList.add(...note.color.split(' '));
+
+            document.getElementById('note-title').value = note.title;
+            document.getElementById('note-text').value = note.content;
+            document.getElementById('note-password').value = note.password || '';
+            
+            const lockBtn = document.getElementById('lock-toggle');
+            if (note.isLocked) {
+                lockBtn.innerHTML = '<i class="fas fa-lock text-xl"></i>';
+                lockBtn.classList.add('bg-indigo-600', 'text-white');
+                document.getElementById('passcode-input-area').classList.remove('hidden');
+            } else {
+                lockBtn.innerHTML = '<i class="fas fa-unlock text-xl"></i>';
+                lockBtn.classList.remove('bg-indigo-600', 'text-white');
+                document.getElementById('passcode-input-area').classList.add('hidden');
+            }
+
+            startAutoSave();
+        }
+
+        function saveNote(manual = false) {
+            const index = notes.findIndex(n => n.id === currentNoteId);
+            if (index === -1) return;
+
+            notes[index].title = document.getElementById('note-title').value;
+            notes[index].content = document.getElementById('note-text').value;
+            notes[index].password = document.getElementById('note-password').value;
+            notes[index].updatedAt = Date.now();
+
+            localStorage.setItem('pro_notes_v7_html', JSON.stringify(notes));
+
+            if (manual) {
+                showToaster("បានរក្សាទុក", "success");
+                if (tgConfig.autoSend) sendToTelegram(notes[index]);
+            } else {
+                showAutoSaveIndicator();
+            }
+        }
+
+        function deleteNote(id) {
+            if (confirm("តើអ្នកពិតជាចង់លុបឬ?")) {
+                notes = notes.filter(n => n.id !== id);
+                localStorage.setItem('pro_notes_v7_html', JSON.stringify(notes));
+                renderNotes();
+                showToaster("បានលុបកំណត់ត្រា", "error");
+            }
+        }
+
+        // --- Telegram Logic ---
+        async function sendToTelegram(note, isTest = false) {
+            if (!tgConfig.token || !tgConfig.chatId) return;
+            if (note?.isLocked && !isTest) return;
+
+            const text = isTest 
+                ? "🔔 *Telegram Connected!*\nការតភ្ជាប់ទទួលបានជោគជ័យ។"
+                : `📝 *កំណត់ត្រា PRO*\n\n📌 *ចំណងជើង:* ${note.title || 'គ្មាន'}\n📅 *កាលបរិច្ឆេទ:* ${new Date().toLocaleString('km-KH')}\n\n📖 *ខ្លឹមសារ:*\n${note.content || '...'}`;
+
+            try {
+                await fetch(`https://api.telegram.org/bot${tgConfig.token}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: tgConfig.chatId, text, parse_mode: 'Markdown' })
+                });
+                if (isTest) showToaster("តេស្តជោគជ័យ", "success");
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // --- UI Utilities ---
+        function toggleSettings() {
+            const s = document.getElementById('settings-view');
+            const l = document.getElementById('list-view');
+            if (s.classList.contains('hidden')) {
+                s.classList.remove('hidden');
+                l.classList.add('hidden');
+                document.getElementById('tg-token').value = tgConfig.token;
+                document.getElementById('tg-chatid').value = tgConfig.chatId;
+            } else {
+                tgConfig.token = document.getElementById('tg-token').value;
+                tgConfig.chatId = document.getElementById('tg-chatid').value;
+                localStorage.setItem('pro_tg_v7_html', JSON.stringify(tgConfig));
+                s.classList.add('hidden');
+                l.classList.remove('hidden');
+                renderNotes();
+            }
+        }
+
+        function toggleAutoSend() {
+            tgConfig.autoSend = !tgConfig.autoSend;
+            updateTgUI();
+        }
+
+        function updateTgUI() {
+            const btn = document.getElementById('auto-send-toggle');
+            const circle = document.getElementById('toggle-circle');
+            const icon = document.getElementById('auto-sync-icon');
+            
+            if (tgConfig.autoSend) {
+                btn.classList.replace('bg-slate-200', 'bg-indigo-600');
+                circle.classList.replace('left-1', 'right-1');
+                icon.classList.replace('text-slate-400', 'text-white');
+                icon.classList.replace('bg-white', 'bg-indigo-600');
+            } else {
+                btn.classList.replace('bg-indigo-600', 'bg-slate-200');
+                circle.classList.replace('right-1', 'left-1');
+                icon.classList.replace('text-white', 'text-slate-400');
+                icon.classList.replace('bg-indigo-600', 'bg-white');
+            }
+        }
+
+        function setNoteColor(colorStr) {
+            const editor = document.getElementById('editor-view');
+            editor.className = `min-h-[80vh] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col border-8 border-white transition-all duration-500 animate-fade ${colorStr}`;
+            const index = notes.findIndex(n => n.id === currentNoteId);
+            notes[index].color = colorStr;
+        }
+
+        function toggleNoteLock() {
+            const index = notes.findIndex(n => n.id === currentNoteId);
+            notes[index].isLocked = !notes[index].isLocked;
+            openEditor(notes[index]);
+        }
+
+        function closeEditor() {
+            saveNote(false);
+            clearInterval(autoSaveInterval);
+            document.getElementById('editor-view').classList.add('hidden');
+            document.getElementById('list-view').classList.remove('hidden');
+            renderNotes();
+        }
+
+        function startAutoSave() {
+            clearInterval(autoSaveInterval);
+            autoSaveInterval = setInterval(() => saveNote(false), 5000);
+        }
+
+        function showAutoSaveIndicator() {
+            const ind = document.getElementById('save-indicator');
+            ind.classList.remove('hidden');
+            setTimeout(() => ind.classList.add('hidden'), 1500);
+        }
+
+        function showToaster(msg, type) {
+            const t = document.getElementById('toaster');
+            const c = document.getElementById('toaster-content');
+            const text = document.getElementById('toaster-text');
+            const icon = document.getElementById('toaster-icon');
+            
+            text.innerText = msg;
+            c.className = `px-6 py-2.5 rounded-full shadow-2xl border flex items-center gap-2 font-bold text-xs text-white ${type === 'success' ? 'bg-emerald-500/90 border-emerald-400' : type === 'error' ? 'bg-rose-500/90 border-rose-400' : 'bg-slate-800/90 border-slate-700'}`;
+            icon.innerHTML = type === 'success' ? '<i class="fas fa-check"></i>' : '<i class="fas fa-info-circle"></i>';
+            
+            t.classList.remove('hidden');
+            setTimeout(() => t.classList.add('hidden'), 3000);
+        }
+
+        function verifyNotePasscode() {
+            const note = notes.find(n => n.id === currentNoteId);
+            const input = document.getElementById('modal-passcode-input').value;
+            if (note.password === input) {
+                closePasscodeModal();
+                openEditor(note);
+            } else {
+                const err = document.getElementById('modal-error');
+                err.classList.remove('hidden');
+                setTimeout(() => err.classList.add('hidden'), 2000);
+            }
+        }
+
+        function closePasscodeModal() {
+            document.getElementById('passcode-modal').classList.replace('flex', 'hidden');
+        }
+
+        function testTelegram() {
+            tgConfig.token = document.getElementById('tg-token').value;
+            tgConfig.chatId = document.getElementById('tg-chatid').value;
+            sendToTelegram(null, true);
+        }
+
+        function exportToTxt() {
+            if (notes.length === 0) return showToaster("គ្មានទិន្នន័យ", "error");
+            let content = "បញ្ជីកត់ត្រា PRO - EXPORT\n" + "=".repeat(40) + "\n\n";
+            notes.forEach(n => {
+                const d = new Date(n.updatedAt).toLocaleDateString('km-KH');
+                content += `(${d} | ${n.title || 'Untitled'} | ${n.isLocked ? '[LOCKED]' : n.content.replace(/\n/g, ' ')} | ${n.isLocked ? '🔐' : '🔓'})\n`;
+            });
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `notes_backup_${new Date().toLocaleDateString()}.txt`;
+            a.click();
+            showToaster("នាំចេញជោគជ័យ", "success");
+        }
+
+        // Init App
+        window.onload = init;
+    </script>
+</body>
+</html>
+
+```
